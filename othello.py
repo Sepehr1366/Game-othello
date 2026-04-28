@@ -1,4 +1,5 @@
 
+# this is a comment
 import pygame
 import random
 import copy
