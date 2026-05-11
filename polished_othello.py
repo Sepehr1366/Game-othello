@@ -1,4 +1,6 @@
 
+
+
 import pygame
 import copy
 
@@ -8,6 +10,7 @@ def directions(x, y):
 
     for dx in [-1, 0, 1]:
         for dy in [-1, 0, 1]:
+
             if dx == 0 and dy == 0:
                 continue
 
@@ -26,6 +29,7 @@ def load_image(path, size):
 
 
 class Token:
+
     def __init__(self, player, row, col, image):
         self.player = player
         self.row = row
@@ -37,7 +41,9 @@ class Token:
 
 
 class Grid:
+
     def __init__(self, rows, cols, size, game):
+
         self.rows = rows
         self.cols = cols
         self.size = size
@@ -50,6 +56,7 @@ class Grid:
         self.grid = self.create_board()
 
     def create_board(self):
+
         board = [[0 for _ in range(8)] for _ in range(8)]
 
         self.insert_token(board, 1, 3, 3)
@@ -60,8 +67,10 @@ class Grid:
         return board
 
     def draw(self, window):
+
         for row in range(8):
             for col in range(8):
+
                 pygame.draw.rect(
                     window,
                     (0, 150, 0),
@@ -84,6 +93,7 @@ class Grid:
         )
 
         for move in moves:
+
             pygame.draw.circle(
                 window,
                 (200, 200, 200),
@@ -92,7 +102,12 @@ class Grid:
             )
 
     def insert_token(self, board, player, row, col):
-        image = self.white_token if player == 1 else self.black_token
+
+        image = (
+            self.white_token
+            if player == 1
+            else self.black_token
+        )
 
         self.tokens[(row, col)] = Token(
             player,
@@ -104,6 +119,7 @@ class Grid:
         board[row][col] = player
 
     def find_valid_cells(self, board, player):
+
         valid = []
 
         for row in range(8):
@@ -113,6 +129,7 @@ class Grid:
                     continue
 
                 for dx, dy in directions(row, col):
+
                     nx = row + dx
                     ny = col + dy
 
@@ -123,6 +140,7 @@ class Grid:
         return valid
 
     def swappable_tiles(self, row, col, board, player):
+
         swappable = []
 
         for dx, dy in directions(row, col):
@@ -135,9 +153,11 @@ class Grid:
             while 0 <= nx < 8 and 0 <= ny < 8:
 
                 if board[nx][ny] == -player:
+
                     current_line.append((nx, ny))
 
                 elif board[nx][ny] == player:
+
                     swappable.extend(current_line)
                     break
 
@@ -150,10 +170,12 @@ class Grid:
         return swappable
 
     def find_available_moves(self, board, player):
+
         valid = self.find_valid_cells(board, player)
         playable = []
 
         for row, col in valid:
+
             tiles = self.swappable_tiles(
                 row,
                 col,
@@ -167,6 +189,7 @@ class Grid:
         return playable
 
     def evaluate(self, board):
+
         score = 0
 
         for row in board:
@@ -302,38 +325,46 @@ class Grid:
         return best_move
 
     def get_score(self, board):
+
         white = 0
         black = 0
 
         for row in board:
             for cell in row:
+
                 if cell == 1:
                     white += 1
+
                 elif cell == -1:
                     black += 1
 
         return white, black
 
     def is_game_over(self, board):
+
         p1_moves = self.find_available_moves(board, 1)
         p2_moves = self.find_available_moves(board, -1)
 
         return len(p1_moves) == 0 and len(p2_moves) == 0
 
     def print_winner(self):
+
         white, black = self.get_score(self.grid)
 
         print(f"White: {white} | Black: {black}")
 
         if white > black:
             print("White wins!")
+
         elif black > white:
             print("Black wins!")
+
         else:
             print("Tie game!")
 
 
 class Othello:
+
     def __init__(self):
 
         pygame.init()
@@ -342,6 +373,10 @@ class Othello:
         pygame.display.set_caption("Othello")
 
         self.current_player = 1
+
+        # MODES
+        self.white_type = "HUMAN"
+        self.black_type = "AI"
 
         self.grid = Grid(
             8,
@@ -352,14 +387,80 @@ class Othello:
 
         self.running = True
 
+    def current_player_type(self):
+
+        if self.current_player == 1:
+            return self.white_type
+
+        return self.black_type
+
     def run(self):
 
         while self.running:
 
-            self.handle_input()
+            if self.current_player_type() == "HUMAN":
+                self.handle_input()
+
+            else:
+                self.ai_move()
+
             self.draw()
 
         pygame.quit()
+
+    def ai_move(self):
+
+        pygame.time.delay(300)
+
+        move = self.grid.get_best_move(
+            self.grid.grid,
+            self.current_player
+        )
+
+        if move:
+
+            row, col = move
+            self.make_move(row, col)
+
+    def make_move(self, row, col):
+
+        self.grid.insert_token(
+            self.grid.grid,
+            self.current_player,
+            row,
+            col
+        )
+
+        tiles = self.grid.swappable_tiles(
+            row,
+            col,
+            self.grid.grid,
+            self.current_player
+        )
+
+        for tile in tiles:
+
+            tile_row, tile_col = tile
+
+            self.grid.grid[tile_row][tile_col] *= -1
+
+            image = (
+                self.grid.white_token
+                if self.current_player == 1
+                else self.grid.black_token
+            )
+
+            self.grid.tokens[(tile_row, tile_col)] = Token(
+                self.current_player,
+                tile_row,
+                tile_col,
+                image
+            )
+
+        self.current_player *= -1
+
+        if self.grid.is_game_over(self.grid.grid):
+            self.grid.print_winner()
 
     def handle_input(self):
 
@@ -383,44 +484,7 @@ class Othello:
                     )
 
                     if (row, col) in moves:
-
-                        self.grid.insert_token(
-                            self.grid.grid,
-                            self.current_player,
-                            row,
-                            col
-                        )
-
-                        tiles = self.grid.swappable_tiles(
-                            row,
-                            col,
-                            self.grid.grid,
-                            self.current_player
-                        )
-
-                        for tile in tiles:
-
-                            tile_row, tile_col = tile
-
-                            self.grid.grid[tile_row][tile_col] *= -1
-
-                            image = (
-                                self.grid.white_token
-                                if self.current_player == 1
-                                else self.grid.black_token
-                            )
-
-                            self.grid.tokens[(tile_row, tile_col)] = Token(
-                                self.current_player,
-                                tile_row,
-                                tile_col,
-                                image
-                            )
-
-                        self.current_player *= -1
-
-                        if self.grid.is_game_over(self.grid.grid):
-                            self.grid.print_winner()
+                        self.make_move(row, col)
 
     def draw(self):
 
@@ -432,5 +496,6 @@ class Othello:
 
 
 if __name__ == "__main__":
+
     game = Othello()
     game.run()
