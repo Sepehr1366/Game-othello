@@ -340,6 +340,9 @@ class Grid:
 
         return white, black
 
+    def get_grid(self):
+        return self.grid
+
     def is_game_over(self, board):
 
         p1_moves = self.find_available_moves(board, 1)
@@ -490,13 +493,15 @@ class Othello:
 
     def display_score(self):
         """Displays the Score in `draw` method"""
+        score = self.grid.get_score(self.grid.get_grid())
+        # print(score)
         text_surface = self.font.render("Score:", True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 650))
 
-        text_surface = self.font.render(f"White (Human): ", True, (255, 255, 255))
+        text_surface = self.font.render(f"White (Human): {score[0]}", True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 690))
 
-        text_surface = self.font.render(f"Black (Agent): ", True, (255, 255, 255))
+        text_surface = self.font.render(f"Black (Agent): {score[1]}", True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 730))
 
         return
