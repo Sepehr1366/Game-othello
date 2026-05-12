@@ -526,7 +526,7 @@ class Othello:
 
     def draw(self):
 
-        self.screen.fill((0, 0, 0))
+        self.screen.fill((42, 42, 42))
 
         self.grid.draw(self.screen)
 
