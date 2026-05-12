@@ -372,7 +372,7 @@ class Othello:
 
         pygame.init()
 
-        self.screen = pygame.display.set_mode((800, 800))
+        self.screen = pygame.display.set_mode((640, 800))
         pygame.display.set_caption("Othello")
 
         self.current_player = 1
