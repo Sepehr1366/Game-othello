@@ -498,10 +498,10 @@ class Othello:
         text_surface = self.font.render("Score:", True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 650))
 
-        text_surface = self.font.render(f"White (Human): {score[0]}", True, (255, 255, 255))
+        text_surface = self.font.render(f"{self.white_type}: {score[0]}", True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 690))
 
-        text_surface = self.font.render(f"Black (Agent): {score[1]}", True, (255, 255, 255))
+        text_surface = self.font.render(f"{self.black_type}: {score[1]}", True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 730))
 
         return
