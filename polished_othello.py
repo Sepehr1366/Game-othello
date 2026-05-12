@@ -415,7 +415,7 @@ class Othello:
 
     def ai_move(self):
 
-        pygame.time.delay(300)
+        pygame.time.delay(300) # once we finish, make "thinking time" slightly longer
 
         move = self.grid.get_best_move(
             self.grid.grid,
