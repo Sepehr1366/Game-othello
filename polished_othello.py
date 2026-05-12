@@ -488,16 +488,8 @@ class Othello:
                     if (row, col) in moves:
                         self.make_move(row, col)
 
-    def display_score():
-        """Displays the Score in the `draw` method"""
-        pass
-
-    def draw(self):
-
-        self.screen.fill((0, 0, 0))
-
-        self.grid.draw(self.screen)
-
+    def display_score(self):
+        """Displays the Score in `draw` method"""
         text_surface = self.font.render("Score:", True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 650))
 
@@ -507,7 +499,15 @@ class Othello:
         text_surface = self.font.render(f"Black (Agent): ", True, (255, 255, 255))
         self.screen.blit(text_surface, (10, 730))
 
+        return
 
+    def draw(self):
+
+        self.screen.fill((0, 0, 0))
+
+        self.grid.draw(self.screen)
+
+        self.display_score()
 
         pygame.display.update()
 
