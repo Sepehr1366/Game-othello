@@ -388,7 +388,7 @@ class Othello:
             self
         )
 
-        self.font = pygame.font.SysFont("Arial", 32)
+        self.font = pygame.font.SysFont("urwbookman", 32)
 
         self.running = True
 
@@ -494,15 +494,33 @@ class Othello:
     def display_score(self):
         """Displays the Score in `draw` method"""
         score = self.grid.get_score(self.grid.get_grid())
-        # print(score)
-        text_surface = self.font.render("Score:", True, (255, 255, 255))
+
+        activated_color = (30, 144, 255) # blue
+        text_color = (255, 255, 255) # white
+
+        text_surface = self.font.render("Score:", True, text_color)
         self.screen.blit(text_surface, (10, 650))
 
-        text_surface = self.font.render(f"{self.white_type}: {score[0]}", True, (255, 255, 255))
-        self.screen.blit(text_surface, (10, 690))
+        # One case for humans and another case for AI
+        if self.current_player_type() == "HUMAN":
+            text_surface = self.font.render(f"→", True, activated_color)
+            self.screen.blit(text_surface, (10, 690))
 
-        text_surface = self.font.render(f"{self.black_type}: {score[1]}", True, (255, 255, 255))
-        self.screen.blit(text_surface, (10, 730))
+            text_surface = self.font.render(f"{self.white_type}: {score[0]}", True, activated_color)
+            self.screen.blit(text_surface, (40, 690))
+
+            text_surface = self.font.render(f"{self.black_type}: {score[1]}", True, text_color)
+            self.screen.blit(text_surface, (40, 730))
+
+        if self.current_player_type() == "AI":
+            text_surface = self.font.render(f"→", True, activated_color)
+            self.screen.blit(text_surface, (10, 730))
+
+            text_surface = self.font.render(f"{self.white_type}: {score[0]}", True, text_color)
+            self.screen.blit(text_surface, (40, 690))
+
+            text_surface = self.font.render(f"{self.black_type}: {score[1]}", True, activated_color)
+            self.screen.blit(text_surface, (40, 730))
 
         return
 
