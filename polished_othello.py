@@ -385,6 +385,8 @@ class Othello:
             self
         )
 
+        self.font = pygame.font.SysFont("Arial", 32)
+
         self.running = True
 
     def current_player_type(self):
@@ -486,11 +488,26 @@ class Othello:
                     if (row, col) in moves:
                         self.make_move(row, col)
 
+    def display_score():
+        """Displays the Score in the `draw` method"""
+        pass
+
     def draw(self):
 
         self.screen.fill((0, 0, 0))
 
         self.grid.draw(self.screen)
+
+        text_surface = self.font.render("Score:", True, (255, 255, 255))
+        self.screen.blit(text_surface, (10, 650))
+
+        text_surface = self.font.render(f"White (Human): ", True, (255, 255, 255))
+        self.screen.blit(text_surface, (10, 690))
+
+        text_surface = self.font.render(f"Black (Agent): ", True, (255, 255, 255))
+        self.screen.blit(text_surface, (10, 730))
+
+
 
         pygame.display.update()
 
