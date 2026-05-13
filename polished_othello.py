@@ -3,7 +3,7 @@
 
 import pygame
 import copy
-
+import tkinter as tk
 
 def directions(x, y):
     dirs = []
