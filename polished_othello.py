@@ -3,7 +3,7 @@
 
 import pygame
 import copy
-import tkinter as tk
+
 
 def directions(x, y):
     dirs = []
@@ -391,7 +391,9 @@ class Othello:
         self.font = pygame.font.SysFont("urwbookman", 32)
 
         self.running = True
-
+        
+   
+       
     def current_player_type(self):
 
         if self.current_player == 1:
@@ -468,12 +470,15 @@ class Othello:
             self.grid.print_winner()
 
     def handle_input(self):
-
+ 
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
                 self.running = False
+            if event.type == pygame.KEYDOWN:
 
+                if event.key == pygame.K_r:
+                    self.reset_game()
             if event.type == pygame.MOUSEBUTTONDOWN:
 
                 if event.button == 1:
@@ -490,7 +495,17 @@ class Othello:
 
                     if (row, col) in moves:
                         self.make_move(row, col)
+                   
+    def reset_game(self):
 
+        self.grid = Grid(
+            8,
+            8,
+            (80, 80),
+            self
+    )
+
+        self.current_player = 1
     def display_score(self):
         """Displays the Score in `draw` method"""
         score = self.grid.get_score(self.grid.get_grid())
