@@ -35,7 +35,7 @@ class Token:
         self.row = row
         self.col = col
         self.image = image
-
+      
     def draw(self, window):
         window.blit(self.image, (self.col * 80, self.row * 80))
 
@@ -353,18 +353,14 @@ class Grid:
     def print_winner(self):
 
         white, black = self.get_score(self.grid)
-
-        print(f"White: {white} | Black: {black}")
-
         if white > black:
-            print("White wins!")
+            self.game.winner_text = "WHITE WINS!"
 
         elif black > white:
-            print("Black wins!")
+            self.game.winner_text = "BLACK WINS!"
 
         else:
-            print("Tie game!")
-
+            self.game.winner_text = "TIE GAME!"
 
 class Othello:
 
@@ -372,7 +368,7 @@ class Othello:
 
         pygame.init()
 
-        self.screen = pygame.display.set_mode((640, 800))
+        self.screen = pygame.display.set_mode((800, 800))
         pygame.display.set_caption("Othello")
 
         self.current_player = 1
@@ -387,13 +383,17 @@ class Othello:
             (80, 80),
             self
         )
+        self.font = pygame.font.SysFont("arial", 32)
 
-        self.font = pygame.font.SysFont("urwbookman", 32)
+        self.reset_button = pygame.Rect(
+            650,
+            680,
+            120,
+            50
+        )
 
         self.running = True
-        
-   
-       
+        self.winner_text = ""
     def current_player_type(self):
 
         if self.current_player == 1:
@@ -467,23 +467,38 @@ class Othello:
         self.current_player *= -1
 
         if self.grid.is_game_over(self.grid.grid):
+
             self.grid.print_winner()
 
+            
     def handle_input(self):
- 
+
         for event in pygame.event.get():
 
+        # QUIT
             if event.type == pygame.QUIT:
                 self.running = False
-            if event.type == pygame.KEYDOWN:
+
+        # KEYBOARD
+            elif event.type == pygame.KEYDOWN:
 
                 if event.key == pygame.K_r:
                     self.reset_game()
-            if event.type == pygame.MOUSEBUTTONDOWN:
 
+        # MOUSE
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+
+                mouse_pos = pygame.mouse.get_pos()
+
+            # RESET BUTTON
+                if self.reset_button.collidepoint(mouse_pos):
+                    self.reset_game()
+                    return
+
+            # BOARD CLICK
                 if event.button == 1:
 
-                    x, y = pygame.mouse.get_pos()
+                    x, y = mouse_pos
 
                     col = x // 80
                     row = y // 80
@@ -491,11 +506,10 @@ class Othello:
                     moves = self.grid.find_available_moves(
                         self.grid.grid,
                         self.current_player
-                    )
+            )
 
                     if (row, col) in moves:
                         self.make_move(row, col)
-                   
     def reset_game(self):
 
         self.grid = Grid(
@@ -546,6 +560,33 @@ class Othello:
         self.grid.draw(self.screen)
 
         self.display_score()
+        # RESET BUTTON
+        pygame.draw.rect(
+            self.screen,
+            (200, 50, 50),
+            self.reset_button,
+            border_radius=10
+)
+
+        text_surface = self.font.render(
+        "RESET",
+        True,
+        (255, 255, 255)
+)
+
+        self.screen.blit(text_surface, (665, 690))
+        if self.winner_text != "":
+
+            winner_surface = self.font.render(
+                self.winner_text,
+                True,
+                (255, 215, 0)
+           )
+
+            self.screen.blit(
+                winner_surface,
+                (250, 650)
+        )
 
         pygame.display.update()
 
