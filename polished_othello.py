@@ -376,7 +376,7 @@ class Othello:
         # MODES
         self.white_type = "HUMAN"
         self.black_type = "AI"
-
+        self.game_started = False
         self.grid = Grid(
             8,
             8,
@@ -384,14 +384,16 @@ class Othello:
             self
         )
         self.font = pygame.font.SysFont("arial", 32)
-
+        self.big_font = pygame.font.SysFont("arial", 50)
         self.reset_button = pygame.Rect(
             650,
             680,
             120,
             50
         )
-
+        self.hvh_button = pygame.Rect(250, 200, 300, 60)
+        self.hvai_button = pygame.Rect(250, 300, 300, 60)
+        self.aivh_button = pygame.Rect(250, 400, 300, 60)
         self.running = True
         self.winner_text = ""
     def current_player_type(self):
@@ -414,7 +416,6 @@ class Othello:
             self.draw()
 
         pygame.quit()
-
     def ai_move(self):
 
         pygame.time.delay(300) # once we finish, make "thinking time" slightly longer
@@ -476,40 +477,75 @@ class Othello:
         for event in pygame.event.get():
 
         # QUIT
-            if event.type == pygame.QUIT:
+           if event.type == pygame.QUIT:
                 self.running = False
 
-        # KEYBOARD
-            elif event.type == pygame.KEYDOWN:
+        # ================= MENU =================
+           if not self.game_started:
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+
+                    mouse_pos = pygame.mouse.get_pos()
+
+                # HUMAN VS HUMAN
+                    if self.hvh_button.collidepoint(mouse_pos):
+
+                        self.white_type = "HUMAN"
+                        self.black_type = "HUMAN"
+                        self.game_started = True
+
+                # HUMAN VS AI
+                    elif self.hvai_button.collidepoint(mouse_pos):
+
+                        self.white_type = "HUMAN"
+                        self.black_type = "AI"
+                        self.game_started = True
+
+                # AI VS HUMAN
+                    elif self.aivh_button.collidepoint(mouse_pos):
+
+                        self.white_type = "AI"
+                        self.black_type = "HUMAN"
+                        self.game_started = True
+
+                continue
+
+        # ================= KEYBOARD =================
+           if event.type == pygame.KEYDOWN:
 
                 if event.key == pygame.K_r:
                     self.reset_game()
 
-        # MOUSE
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+        # ================= MOUSE =================
+           elif event.type == pygame.MOUSEBUTTONDOWN:
 
                 mouse_pos = pygame.mouse.get_pos()
 
             # RESET BUTTON
                 if self.reset_button.collidepoint(mouse_pos):
+
                     self.reset_game()
                     return
 
-            # BOARD CLICK
+            # STOP INPUT AFTER GAME OVER
+                if self.winner_text != "":
+                    return
+
+            # LEFT CLICK
                 if event.button == 1:
 
-                    x, y = mouse_pos
+                     x, y = mouse_pos
 
-                    col = x // 80
-                    row = y // 80
+                     col = x // 80
+                     row = y // 80
 
-                    moves = self.grid.find_available_moves(
-                        self.grid.grid,
-                        self.current_player
-            )
+                     moves = self.grid.find_available_moves(
+                     self.grid.grid,
+                     self.current_player
+                )
 
-                    if (row, col) in moves:
-                        self.make_move(row, col)
+                if (row, col) in moves:
+                    self.make_move(row, col)
     def reset_game(self):
 
         self.grid = Grid(
@@ -520,6 +556,8 @@ class Othello:
     )
 
         self.current_player = 1
+        self.winner_text = ""
+        
     def display_score(self):
         """Displays the Score in `draw` method"""
         score = self.grid.get_score(self.grid.get_grid())
@@ -555,41 +593,110 @@ class Othello:
 
     def draw(self):
 
-        self.screen.fill((42, 42, 42))
+         self.screen.fill((42, 42, 42))
 
-        self.grid.draw(self.screen)
+    # MENU
+         if not self.game_started:
 
-        self.display_score()
-        # RESET BUTTON
-        pygame.draw.rect(
+             self.draw_menu()
+             pygame.display.update()
+             return
+
+             # GAME
+         self.grid.draw(self.screen)
+
+         self.display_score()
+
+    # RESET BUTTON
+         pygame.draw.rect(
             self.screen,
             (200, 50, 50),
             self.reset_button,
-            border_radius=10
-)
+             border_radius=10
+         )
 
-        text_surface = self.font.render(
-        "RESET",
+         text_surface = self.font.render(
+            "RESET",
         True,
         (255, 255, 255)
-)
+    )
 
-        self.screen.blit(text_surface, (665, 690))
-        if self.winner_text != "":
+         self.screen.blit(text_surface, (665, 690))
 
-            winner_surface = self.font.render(
-                self.winner_text,
-                True,
-                (255, 215, 0)
-           )
+    # WINNER TEXT
+         if self.winner_text != "":
 
-            self.screen.blit(
+             winner_surface = self.font.render(
+             self.winner_text,
+             True,
+             (255, 215, 0)
+        )
+
+             self.screen.blit(
                 winner_surface,
                 (250, 650)
         )
 
-        pygame.display.update()
+         pygame.display.update()
+    def draw_menu(self):
 
+         self.screen.fill((30, 30, 30))
+
+         title = self.big_font.render(
+            "OTHELLO GAME",
+            True,
+            (255, 255, 255)
+        )
+
+         self.screen.blit(title, (220, 80))
+
+        # HUMAN VS HUMAN
+         pygame.draw.rect(
+            self.screen,
+            (50, 150, 255),
+            self.hvh_button,
+            border_radius=10
+        )
+
+         text = self.font.render(
+            "Human vs Human",
+             True,
+             (255, 255, 255)
+       )
+
+         self.screen.blit(text, (300, 220))
+
+    # HUMAN VS AI
+         pygame.draw.rect(
+            self.screen,
+            (50, 200, 100),
+            self.hvai_button,
+            border_radius=10
+       )
+
+         text = self.font.render(
+             "Human vs AI",
+              True,
+            (255, 255, 255)
+    )
+
+         self.screen.blit(text, (320, 320))
+
+        # AI VS HUMAN
+         pygame.draw.rect(
+             self.screen,
+             (200, 100, 50),
+             self.aivh_button,
+             border_radius=10
+    )
+
+         text = self.font.render(
+             "AI vs Human",
+             True,
+             (255, 255, 255)
+    )
+
+         self.screen.blit(text, (320, 420))
 
 if __name__ == "__main__":
 
