@@ -393,9 +393,14 @@ class Othello:
         )
         self.hvh_button = pygame.Rect(250, 200, 300, 60)
         self.hvai_button = pygame.Rect(250, 300, 300, 60)
-        self.aivh_button = pygame.Rect(250, 400, 300, 60)
+        self.choose_color = False
+        self.hvh_mode = False
+        self.white_button = pygame.Rect(250, 300, 300, 60)
+        self.black_button = pygame.Rect(250, 400, 300, 60)
+ 
         self.running = True
         self.winner_text = ""
+        
     def current_player_type(self):
 
         if self.current_player == 1:
@@ -407,16 +412,21 @@ class Othello:
 
         while self.running:
 
-            if self.current_player_type() == "HUMAN":
-                self.handle_input()
+            if "HUMAN" in self.current_player_type():
+
+               self.handle_input()
 
             else:
+
                 self.ai_move()
 
             self.draw()
 
         pygame.quit()
     def ai_move(self):
+        # STOP AI AFTER GAME ENDS
+        if self.winner_text != "":
+            return
 
         pygame.time.delay(300) # once we finish, make "thinking time" slightly longer
 
@@ -467,11 +477,27 @@ class Othello:
 
         self.current_player *= -1
 
-        if self.grid.is_game_over(self.grid.grid):
+# CHECK AVAILABLE MOVES
+        moves = self.grid.find_available_moves(
+            self.grid.grid,
+            self.current_player
+    )
 
-            self.grid.print_winner()
+# SKIP TURN IF NO MOVES
+        if len(moves) == 0:
 
-            
+             self.current_player *= -1
+
+    # CHECK AGAIN FOR OTHER PLAYER
+             second_moves = self.grid.find_available_moves(
+                 self.grid.grid,
+                 self.current_player
+    )
+
+    # BOTH PLAYERS CANNOT MOVE
+             if len(second_moves) == 0:
+
+                 self.grid.print_winner()
     def handle_input(self):
 
         for event in pygame.event.get():
@@ -480,50 +506,71 @@ class Othello:
            if event.type == pygame.QUIT:
                 self.running = False
 
-        # ================= MENU =================
-           if not self.game_started:
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-
-                    mouse_pos = pygame.mouse.get_pos()
-
-                # HUMAN VS HUMAN
-                    if self.hvh_button.collidepoint(mouse_pos):
-
-                        self.white_type = "HUMAN"
-                        self.black_type = "HUMAN"
-                        self.game_started = True
-
-                # HUMAN VS AI
-                    elif self.hvai_button.collidepoint(mouse_pos):
-
-                        self.white_type = "HUMAN"
-                        self.black_type = "AI"
-                        self.game_started = True
-
-                # AI VS HUMAN
-                    elif self.aivh_button.collidepoint(mouse_pos):
-
-                        self.white_type = "AI"
-                        self.black_type = "HUMAN"
-                        self.game_started = True
-
-                continue
-
-        # ================= KEYBOARD =================
+        # KEYBOARD
            if event.type == pygame.KEYDOWN:
 
                 if event.key == pygame.K_r:
                     self.reset_game()
 
-        # ================= MOUSE =================
-           elif event.type == pygame.MOUSEBUTTONDOWN:
+        # MOUSE
+           if event.type == pygame.MOUSEBUTTONDOWN:
 
                 mouse_pos = pygame.mouse.get_pos()
 
-            # RESET BUTTON
-                if self.reset_button.collidepoint(mouse_pos):
+        
+                # ================= COLOR MENU =================
+                if self.choose_color:
 
+    # WHITE BUTTON
+                    if self.white_button.collidepoint(mouse_pos):
+
+                         if self.hvh_mode:
+                             self.white_type = "HUMAN 1"
+                             self.black_type = "HUMAN 2"
+
+                         else:
+                            self.white_type = "HUMAN"
+                            self.black_type = "AI"
+
+                         self.current_player = 1
+                         self.game_started = True
+                         self.choose_color = False
+                         return
+
+    # BLACK BUTTON
+                    elif self.black_button.collidepoint(mouse_pos):
+
+                        if self.hvh_mode:
+                            self.white_type = "HUMAN 2"
+                            self.black_type = "HUMAN 1"
+
+                        else:
+                            self.white_type = "AI"
+                            self.black_type = "HUMAN"
+
+                        self.current_player = 1
+                        self.game_started = True
+                        self.choose_color = False
+                        return
+            # ================= MAIN MENU =================
+                if not self.game_started:
+
+                    if self.hvh_button.collidepoint(mouse_pos):
+
+                        
+                        self.hvh_mode = True
+                        self.choose_color = True
+
+                    elif self.hvai_button.collidepoint(mouse_pos):
+
+                        self.choose_color = True
+                       
+
+                    return
+
+            # ================= RESET BUTTON =================
+                if self.reset_button.collidepoint(mouse_pos):
+ 
                     self.reset_game()
                     return
 
@@ -531,21 +578,23 @@ class Othello:
                 if self.winner_text != "":
                     return
 
-            # LEFT CLICK
+            # ================= GAME BOARD =================
                 if event.button == 1:
 
                      x, y = mouse_pos
 
-                     col = x // 80
-                     row = y // 80
+                     if y < 640:
 
-                     moves = self.grid.find_available_moves(
-                     self.grid.grid,
-                     self.current_player
-                )
+                         col = x // 80
+                         row = y // 80
 
-                if (row, col) in moves:
-                    self.make_move(row, col)
+                         moves = self.grid.find_available_moves(
+                             self.grid.grid,
+                             self.current_player
+                    )
+
+                         if (row, col) in moves:
+                            self.make_move(row, col)
     def reset_game(self):
 
         self.grid = Grid(
@@ -557,50 +606,80 @@ class Othello:
 
         self.current_player = 1
         self.winner_text = ""
+        self.game_started = False
+        self.choose_color = False
+        self.hvh_mode = False
+
+        self.white_type = "HUMAN"
+        self.black_type = "AI"
         
     def display_score(self):
-        """Displays the Score in `draw` method"""
+
         score = self.grid.get_score(self.grid.get_grid())
 
-        activated_color = (30, 144, 255) # blue
-        text_color = (255, 255, 255) # white
+        activated_color = (30, 144, 255)
+        text_color = (255, 255, 255)
 
-        text_surface = self.font.render("Score:", True, text_color)
+        text_surface = self.font.render(
+            "Score:",
+             True,
+             text_color
+        )
+
         self.screen.blit(text_surface, (10, 650))
 
-        # One case for humans and another case for AI
-        if self.current_player_type() == "HUMAN":
-            text_surface = self.font.render(f"→", True, activated_color)
-            self.screen.blit(text_surface, (10, 690))
+    # WHITE PLAYER
+        white_color = text_color
+        black_color = text_color
 
-            text_surface = self.font.render(f"{self.white_type}: {score[0]}", True, activated_color)
-            self.screen.blit(text_surface, (40, 690))
+        if self.current_player == 1:
+             white_color = activated_color
+        else:
+             black_color = activated_color
 
-            text_surface = self.font.render(f"{self.black_type}: {score[1]}", True, text_color)
-            self.screen.blit(text_surface, (40, 730))
+        white_text = self.font.render(
+             f"{self.white_type}: {score[0]}",
+             True,
+             white_color
+    )
 
-        if self.current_player_type() == "AI":
-            text_surface = self.font.render(f"→", True, activated_color)
-            self.screen.blit(text_surface, (10, 730))
+        black_text = self.font.render(
+             f"{self.black_type}: {score[1]}",
+             True,
+             black_color
+    )
 
-            text_surface = self.font.render(f"{self.white_type}: {score[0]}", True, text_color)
-            self.screen.blit(text_surface, (40, 690))
+        self.screen.blit(white_text, (40, 690))
+        self.screen.blit(black_text, (40, 730))
 
-            text_surface = self.font.render(f"{self.black_type}: {score[1]}", True, activated_color)
-            self.screen.blit(text_surface, (40, 730))
+    # ARROW
+        arrow_y = 690 if self.current_player == 1 else 730
 
-        return
+        arrow = self.font.render(
+            "→",
+            True,
+            activated_color
+    )
+
+        self.screen.blit(arrow, (10, arrow_y))
 
     def draw(self):
 
          self.screen.fill((42, 42, 42))
 
     # MENU
-         if not self.game_started:
+         if self.choose_color:
 
-             self.draw_menu()
-             pygame.display.update()
-             return
+            self.draw_color_menu()
+            pygame.display.update()
+            return
+
+# MAIN MENU
+         if not self.game_started and not self.choose_color:
+
+           self.draw_menu()
+           pygame.display.update()
+           return
 
              # GAME
          self.grid.draw(self.screen)
@@ -614,29 +693,40 @@ class Othello:
             self.reset_button,
              border_radius=10
          )
+         if self.choose_color:
 
+             self.draw_color_menu()
+
+             pygame.display.update()
+
+             return
          text_surface = self.font.render(
             "RESET",
-        True,
-        (255, 255, 255)
+            True,
+            (255, 255, 255)
     )
 
          self.screen.blit(text_surface, (665, 690))
 
     # WINNER TEXT
+         # GAME OVER CHECK
+         if self.grid.is_game_over(self.grid.grid):
+
+             self.grid.print_winner()
+
+# WINNER TEXT
          if self.winner_text != "":
 
-             winner_surface = self.font.render(
-             self.winner_text,
-             True,
-             (255, 215, 0)
-        )
+             winner_surface = self.big_font.render(
+                 self.winner_text,
+                 True,
+                 (255, 215, 0)
+    )
 
              self.screen.blit(
-                winner_surface,
-                (250, 650)
-        )
-
+             winner_surface,
+             (220, 640)
+    )
          pygame.display.update()
     def draw_menu(self):
 
@@ -682,22 +772,47 @@ class Othello:
 
          self.screen.blit(text, (320, 320))
 
-        # AI VS HUMAN
-         pygame.draw.rect(
-             self.screen,
-             (200, 100, 50),
-             self.aivh_button,
-             border_radius=10
-    )
+    def draw_color_menu(self):
 
-         text = self.font.render(
-             "AI vs Human",
+        self.screen.fill((30, 30, 30))
+
+        title = self.big_font.render(
+             "Choose Color",
              True,
              (255, 255, 255)
     )
 
-         self.screen.blit(text, (320, 420))
+        self.screen.blit(title, (240, 150))
 
+        pygame.draw.rect(
+            self.screen,
+            (220, 220, 220),
+            self.white_button,
+            border_radius=10
+    )
+
+        text = self.font.render(
+             "Play as White",
+             True,
+             (0, 0, 0)
+    )
+
+        self.screen.blit(text, (300, 320))
+
+        pygame.draw.rect(
+            self.screen,
+            (50, 50, 50),
+            self.black_button,
+            border_radius=10
+    )
+
+        text = self.font.render(
+            "Play as Black",
+            True,
+            (255, 255, 255)
+    )
+
+        self.screen.blit(text, (300, 420))
 if __name__ == "__main__":
 
     game = Othello()
