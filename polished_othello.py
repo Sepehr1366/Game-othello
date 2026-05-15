@@ -5,6 +5,7 @@ import pygame
 W_OFFSET = 80
 H_OFFSET = 20
 
+
 # Returns all possible directions around a cell
 def directions(x, y):
     dirs = []
@@ -43,7 +44,10 @@ class Token:
         self.h_offset = H_OFFSET
 
     def draw(self, window):
-        window.blit(self.image, ((self.col * 80)+self.w_offset, (self.row * 80)+self.h_offset))
+        window.blit(
+            self.image,
+            ((self.col * 80) + self.w_offset, (self.row * 80) + self.h_offset),
+        )
 
 
 # Main board and game logic class
@@ -81,9 +85,18 @@ class Grid:
         for row in range(8):
             for col in range(8):
 
-                pygame.draw.rect(window, (0, 150, 0), ((col * 80)+self.w_offset, (row * 80)+self.h_offset, 80, 80))
+                pygame.draw.rect(
+                    window,
+                    (0, 150, 0),
+                    ((col * 80) + self.w_offset, (row * 80) + self.h_offset, 80, 80),
+                )
 
-                pygame.draw.rect(window, (0, 0, 0), ((col * 80)+self.w_offset, (row * 80)+self.h_offset, 80, 80), 1)
+                pygame.draw.rect(
+                    window,
+                    (0, 0, 0),
+                    ((col * 80) + self.w_offset, (row * 80) + self.h_offset, 80, 80),
+                    1,
+                )
 
         for token in self.tokens.values():
             token.draw(window)
@@ -93,7 +106,13 @@ class Grid:
         for move in moves:
 
             pygame.draw.circle(
-                window, (200, 200, 200), ((move[1] * 80 + 40)+self.w_offset, (move[0] * 80 + 40)+self.h_offset), 10
+                window,
+                (200, 200, 200),
+                (
+                    (move[1] * 80 + 40) + self.w_offset,
+                    (move[0] * 80 + 40) + self.h_offset,
+                ),
+                10,
             )
 
     # Places a new token on the board and updates the game grid
@@ -523,7 +542,7 @@ class Othello:
                     board_x = x - W_OFFSET
                     board_y = y - H_OFFSET
 
-                    if board_x < 640 and 0 <= board_y <640:
+                    if board_x < 640 and 0 <= board_y < 640:
 
                         col = board_x // 80
                         row = board_y // 80
@@ -598,7 +617,6 @@ class Othello:
             current_token = self.grid.white_token
 
         self.screen.blit(current_token, (380, 690))
-        
 
     # Draws the game interface and winner screen
     def draw(self):
