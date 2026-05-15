@@ -333,8 +333,8 @@ class Othello:
         self.grid = Grid(8, 8, (80, 80), self)
 
         if sys.platform == "win32":
-            self.font = pygame.font.SysFont("georgia", 32, bold=True)
-            self.big_font = pygame.font.SysFont("georgia", 50, bold=True)
+            self.font = pygame.font.SysFont("bookmanoldstyle", 32, bold=True)
+            self.big_font = pygame.font.SysFont("bookmanoldstyle", 50, bold=True)
 
         elif sys.platform == "linux":
             self.font = pygame.font.SysFont("urwbookman", 32)
