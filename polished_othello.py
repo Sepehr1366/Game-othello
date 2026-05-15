@@ -573,7 +573,7 @@ class Othello:
             self.screen.blit(arrow, (10, arrow_y))
 
         else:
-            arrow = self.font.render("-->", True, activated_color)
+            arrow = self.font.render("→", True, activated_color)
             self.screen.blit(arrow, (10, arrow_y))
 
     # Draws the game interface and winner screen
