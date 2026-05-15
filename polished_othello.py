@@ -576,6 +576,15 @@ class Othello:
             arrow = self.font.render("→", True, activated_color)
             self.screen.blit(arrow, (10, arrow_y))
 
+    def display_current_token(self):
+        if self.current_player == -1:
+            current_token = self.grid.black_token
+        else:
+            current_token = self.grid.white_token
+
+        self.screen.blit(current_token, (350, 670))
+        
+
     # Draws the game interface and winner screen
     def draw(self):
 
@@ -597,6 +606,8 @@ class Othello:
         self.grid.draw(self.screen)
 
         self.display_score()
+
+        self.display_current_token()
 
         pygame.draw.rect(
             self.screen, (200, 50, 50), self.reset_button, border_radius=10
