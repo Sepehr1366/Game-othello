@@ -395,13 +395,13 @@ class Othello:
             self.big_font = pygame.font.SysFont(None, 50)
 
         self.reset_button = pygame.Rect(
-            650,
+            635,
             680,
-            120,
+            145,
             50
         )
-        self.hvh_button = pygame.Rect(250, 200, 300, 60)
-        self.hvai_button = pygame.Rect(250, 300, 300, 60)
+        self.hvh_button = pygame.Rect(280, 200, 330, 60)
+        self.hvai_button = pygame.Rect(280, 300, 330, 60)
         self.choose_color = False
         self.hvh_mode = False
         self.white_button = pygame.Rect(250, 300, 300, 60)
@@ -663,19 +663,28 @@ class Othello:
              black_color
     )
 
-        self.screen.blit(white_text, (40, 690))
-        self.screen.blit(black_text, (40, 730))
+        self.screen.blit(white_text, (60, 690))
+        self.screen.blit(black_text, (60, 730))
 
    
         arrow_y = 690 if self.current_player == 1 else 730
 
-        arrow = self.font.render(
-            "→",
-            True,
-            activated_color
-    )
+        if sys.platform == "linux":
+            arrow = self.font.render(
+                "→",
+                True,
+                activated_color
+            )
+            self.screen.blit(arrow, (10, arrow_y))
+        
+        else:
+            arrow = self.font.render(
+                "-->",
+                True,
+                activated_color
+            )
+            self.screen.blit(arrow, (10, arrow_y))
 
-        self.screen.blit(arrow, (10, arrow_y))
     # Draws the game interface and winner screen
     def draw(self):
 
@@ -720,7 +729,7 @@ class Othello:
             (255, 255, 255)
     )
 
-         self.screen.blit(text_surface, (665, 690))
+         self.screen.blit(text_surface, (650, 690))
 
     
          
@@ -785,7 +794,7 @@ class Othello:
             (255, 255, 255)
     )
 
-         self.screen.blit(text, (320, 320))
+         self.screen.blit(text, (340, 320))
     # Draws the color selection menu
     def draw_color_menu(self):
 
