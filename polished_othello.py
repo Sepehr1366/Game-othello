@@ -1,8 +1,6 @@
-
-
-
-import pygame
+import sys
 import copy
+import pygame
 
 # Returns all possible directions around a cell
 def directions(x, y):
@@ -383,8 +381,19 @@ class Othello:
             (80, 80),
             self
         )
-        self.font = pygame.font.SysFont("arial", 32)
-        self.big_font = pygame.font.SysFont("arial", 50)
+
+        if sys.platform == "win32":
+            self.font = pygame.font.SysFont("georgia", 32, bold=True)
+            self.big_font = pygame.font.SysFont("georgia", 50, bold=True)
+
+        elif sys.platform == "linux":
+            self.font = pygame.font.SysFont("urwbookman", 32)
+            self.big_font = pygame.font.SysFont("urwbookman", 50)
+
+        else:
+            self.font = pygame.font.SysFont(None, 32)
+            self.big_font = pygame.font.SysFont(None, 50)
+
         self.reset_button = pygame.Rect(
             650,
             680,
@@ -400,6 +409,7 @@ class Othello:
  
         self.running = True
         self.winner_text = ""
+
      # Returns the type of the current player (Human or AI)   
     def current_player_type(self):
 
@@ -407,6 +417,7 @@ class Othello:
             return self.white_type
 
         return self.black_type
+
     # Main game loop
     def run(self):
 
