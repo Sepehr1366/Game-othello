@@ -577,7 +577,7 @@ class Othello:
             self.screen.blit(arrow, (10, arrow_y))
 
     def display_current_token(self):
-        """Displays the current token on the screen"""
+        """Displays current token in score area"""
         if self.current_player == -1:
             current_token = self.grid.black_token
         else:
