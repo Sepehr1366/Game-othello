@@ -597,7 +597,7 @@ class Othello:
         else:
             current_token = self.grid.white_token
 
-        self.screen.blit(current_token, (350, 670))
+        self.screen.blit(current_token, (380, 690))
         
 
     # Draws the game interface and winner screen
