@@ -2,6 +2,8 @@ import sys
 import copy
 import pygame
 
+W_OFFSET = 80
+H_OFFSET = 20
 
 # Returns all possible directions around a cell
 def directions(x, y):
@@ -37,8 +39,11 @@ class Token:
         self.col = col
         self.image = image
 
+        self.w_offset = W_OFFSET
+        self.h_offset = H_OFFSET
+
     def draw(self, window):
-        window.blit(self.image, (self.col * 80, self.row * 80))
+        window.blit(self.image, ((self.col * 80)+self.w_offset, (self.row * 80)+self.h_offset))
 
 
 # Main board and game logic class
@@ -57,6 +62,9 @@ class Grid:
         self.tokens = {}
         self.grid = self.create_board()
 
+        self.w_offset = W_OFFSET
+        self.h_offset = H_OFFSET
+
     def create_board(self):
 
         board = [[0 for _ in range(8)] for _ in range(8)]
@@ -73,9 +81,9 @@ class Grid:
         for row in range(8):
             for col in range(8):
 
-                pygame.draw.rect(window, (0, 150, 0), (col * 80, row * 80, 80, 80))
+                pygame.draw.rect(window, (0, 150, 0), ((col * 80)+self.w_offset, (row * 80)+self.h_offset, 80, 80))
 
-                pygame.draw.rect(window, (0, 0, 0), (col * 80, row * 80, 80, 80), 1)
+                pygame.draw.rect(window, (0, 0, 0), ((col * 80)+self.w_offset, (row * 80)+self.h_offset, 80, 80), 1)
 
         for token in self.tokens.values():
             token.draw(window)
@@ -85,7 +93,7 @@ class Grid:
         for move in moves:
 
             pygame.draw.circle(
-                window, (200, 200, 200), (move[1] * 80 + 40, move[0] * 80 + 40), 10
+                window, (200, 200, 200), ((move[1] * 80 + 40)+self.w_offset, (move[0] * 80 + 40)+self.h_offset), 10
             )
 
     # Places a new token on the board and updates the game grid
@@ -332,6 +340,9 @@ class Othello:
         self.game_started = False
         self.grid = Grid(8, 8, (80, 80), self)
 
+        self.h_offset = H_OFFSET
+        self.w_offset = W_OFFSET
+
         if sys.platform == "win32":
             self.font = pygame.font.SysFont("bookmanoldstyle", 32, bold=True)
             self.big_font = pygame.font.SysFont("bookmanoldstyle", 50, bold=True)
@@ -509,10 +520,13 @@ class Othello:
 
                     x, y = mouse_pos
 
-                    if y < 640:
+                    board_x = x - W_OFFSET
+                    board_y = y - H_OFFSET
 
-                        col = x // 80
-                        row = y // 80
+                    if board_x < 640 and 0 <= board_y <640:
+
+                        col = board_x // 80
+                        row = board_y // 80
 
                         moves = self.grid.find_available_moves(
                             self.grid.grid, self.current_player
@@ -545,7 +559,7 @@ class Othello:
 
         text_surface = self.font.render("Score:", True, text_color)
 
-        self.screen.blit(text_surface, (10, 650))
+        self.screen.blit(text_surface, (10, 670))
 
         white_color = text_color
         black_color = text_color
@@ -563,10 +577,10 @@ class Othello:
             f"{self.black_type}: {score[1]}", True, black_color
         )
 
-        self.screen.blit(white_text, (60, 690))
-        self.screen.blit(black_text, (60, 730))
+        self.screen.blit(white_text, (60, 710))
+        self.screen.blit(black_text, (60, 750))
 
-        arrow_y = 690 if self.current_player == 1 else 730
+        arrow_y = 710 if self.current_player == 1 else 750
 
         if sys.platform == "linux":
             arrow = self.font.render("→", True, activated_color)
