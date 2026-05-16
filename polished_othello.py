@@ -426,6 +426,9 @@ class Othello:
         """Places a move and flips opponent pieces"""
         self.grid.insert_token(self.grid.grid, self.current_player, row, col)
 
+        self.draw()
+        pygame.time.delay(500)
+
         tiles = self.grid.swappable_tiles(row, col, self.grid.grid, self.current_player)
 
         for tile in tiles:
