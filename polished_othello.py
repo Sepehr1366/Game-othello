@@ -568,6 +568,17 @@ class Othello:
         self.white_type = "HUMAN"
         self.black_type = "AI"
 
+    def draw_board_border(self):
+        outer_border_dimension = (50, 0, 700, 673)
+        pygame.draw.rect(self.screen, (0, 0, 0, 0), outer_border_dimension)
+        
+        middle_border_dim = (63, 8, 675, 660)
+        pygame.draw.rect(self.screen, (255, 255, 255, 1), middle_border_dim)
+
+        inner_border_dim = (65, 10, 670, 656)
+        pygame.draw.rect(self.screen, (0, 0, 0, 0), inner_border_dim)
+        
+
     # Displays current scores on the screen
     def display_score(self):
 
@@ -578,7 +589,7 @@ class Othello:
 
         text_surface = self.font.render("Score:", True, text_color)
 
-        self.screen.blit(text_surface, (10, 670))
+        self.screen.blit(text_surface, (10, 673))
 
         white_color = text_color
         black_color = text_color
@@ -636,11 +647,14 @@ class Othello:
             return
 
             # GAME
+        self.draw_board_border()
         self.grid.draw(self.screen)
 
         self.display_score()
 
         self.display_current_token()
+
+
 
         pygame.draw.rect(
             self.screen, (200, 50, 50), self.reset_button, border_radius=10
