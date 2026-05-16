@@ -6,6 +6,7 @@ algorithm, or another human.
 import sys
 import copy
 import pygame
+from random import randint
 
 W_OFFSET = 80
 H_OFFSET = 20
@@ -413,7 +414,7 @@ class Othello:
         if self.winner_text != "":
             return
 
-        pygame.time.delay(300)  # once we finish, make "thinking time" slightly longer
+        pygame.time.delay(randint(1000, 2000))
 
         move = self.grid.get_best_move(self.grid.grid, self.current_player)
 
