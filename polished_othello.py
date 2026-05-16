@@ -1,3 +1,8 @@
+"""
+A classic Othello game that where the user can play against an AI agent using the MiniMax
+algorithm, or another human.
+"""
+
 import sys
 import copy
 import pygame
@@ -6,8 +11,8 @@ W_OFFSET = 80
 H_OFFSET = 20
 
 
-# Returns all possible directions around a cell
 def directions(x, y):
+    """Returns all possible directions around a cell"""
     dirs = []
 
     for dx in [-1, 0, 1]:
@@ -25,14 +30,14 @@ def directions(x, y):
     return dirs
 
 
-# Loads and resizes game images
 def load_image(path, size):
+    """Loads and resizes game images"""
     image = pygame.image.load(path).convert_alpha()
     return pygame.transform.scale(image, size)
 
 
-# Represents a single game token (black or white piece)
 class Token:
+    """Represents a single game token (black or white piece)"""
 
     def __init__(self, player, row, col, image):
         self.player = player
@@ -50,8 +55,8 @@ class Token:
         )
 
 
-# Main board and game logic class
 class Grid:
+    """Main board and game logic class"""
 
     def __init__(self, rows, cols, size, game):
 
@@ -115,18 +120,16 @@ class Grid:
                 10,
             )
 
-    # Places a new token on the board and updates the game grid
     def insert_token(self, board, player, row, col):
-
+        """Places a new token on the board and updates the game grid"""
         image = self.white_token if player == 1 else self.black_token
 
         self.tokens[(row, col)] = Token(player, row, col, image)
 
         board[row][col] = player
 
-    # Finds all valid positions where the current player can place a token
     def find_valid_cells(self, board, player):
-
+        """Finds all valid positions where the current player can place a token"""
         valid = []
 
         for row in range(8):
@@ -146,9 +149,8 @@ class Grid:
 
         return valid
 
-    # Determines which opponent tiles will be flipped after a move
     def swappable_tiles(self, row, col, board, player):
-
+        """Determines which opponent tiles will be flipped after a move"""
         swappable = []
 
         for dx, dy in directions(row, col):
@@ -177,9 +179,8 @@ class Grid:
 
         return swappable
 
-    # Checks the board and returns all valid moves the player can make
     def find_available_moves(self, board, player):
-
+        """Checks the board and returns all valid moves the player can make"""
         valid = self.find_valid_cells(board, player)
         playable = []
 
@@ -192,9 +193,8 @@ class Grid:
 
         return playable
 
-    # Evaluates the board score for the AI
     def evaluate(self, board):
-
+        """# Evaluates the board score for the AI"""
         score = 0
 
         for row in board:
@@ -203,9 +203,8 @@ class Grid:
 
         return score
 
-    # AI decision-making function that finds the best possible move
     def minimax(self, board, depth, alpha, beta, maximizing):
-
+        """AI decision-making function that finds the best possible move"""
         player = 1 if maximizing else -1
         moves = self.find_available_moves(board, player)
 
@@ -260,8 +259,8 @@ class Grid:
 
             return min_eval
 
-    # Finds the best move for the AI using Minimax
     def get_best_move(self, board, player):
+        """Finds the best move for the AI using Minimax"""
 
         best_move = None
 
@@ -300,8 +299,8 @@ class Grid:
 
         return best_move
 
-    # Calculates current scores for white and black players
     def get_score(self, board):
+        """Calculates current scores for white and black players"""
 
         white = 0
         black = 0
@@ -320,16 +319,16 @@ class Grid:
     def get_grid(self):
         return self.grid
 
-    # Checks if no more moves are available for both players
     def is_game_over(self, board):
+        """Checks if no more moves are available for both players"""
 
         p1_moves = self.find_available_moves(board, 1)
         p2_moves = self.find_available_moves(board, -1)
 
         return len(p1_moves) == 0 and len(p2_moves) == 0
 
-    # Displays the game winner
     def print_winner(self):
+        """Displays the game winner"""
 
         white, black = self.get_score(self.grid)
         if white > black:
@@ -342,8 +341,8 @@ class Grid:
             self.game.winner_text = "TIE GAME!"
 
 
-# Main game controller class
 class Othello:
+    """Main game controller class"""
 
     def __init__(self):
 
@@ -385,17 +384,15 @@ class Othello:
         self.running = True
         self.winner_text = ""
 
-    # Returns the type of the current player (Human or AI)
     def current_player_type(self):
-
+        """Returns the type of the current player (Human or AI)"""
         if self.current_player == 1:
             return self.white_type
 
         return self.black_type
 
-    # Main game loop
     def run(self):
-
+        """Main game loop"""
         while self.running:
 
             if "HUMAN" in self.current_player_type():
@@ -410,8 +407,8 @@ class Othello:
 
         pygame.quit()
 
-    # Handles AI moves
     def ai_move(self):
+        """Handles AI moves"""
         # STOP AI AFTER GAME ENDS
         if self.winner_text != "":
             return
@@ -425,9 +422,8 @@ class Othello:
             row, col = move
             self.make_move(row, col)
 
-    # Places a move and flips opponent pieces
     def make_move(self, row, col):
-
+        """Places a move and flips opponent pieces"""
         self.grid.insert_token(self.grid.grid, self.current_player, row, col)
 
         tiles = self.grid.swappable_tiles(row, col, self.grid.grid, self.current_player)
@@ -464,9 +460,8 @@ class Othello:
 
                 self.grid.print_winner()
 
-    # Handles keyboard and mouse input
     def handle_input(self):
-
+        """Handles keyboard and mouse input"""
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
@@ -554,9 +549,8 @@ class Othello:
                         if (row, col) in moves:
                             self.make_move(row, col)
 
-    # Resets the game to the initial state
     def reset_game(self):
-
+        """Resets the game to the initial state"""
         self.grid = Grid(8, 8, (80, 80), self)
 
         self.current_player = 1
@@ -569,6 +563,7 @@ class Othello:
         self.black_type = "AI"
 
     def draw_board_border(self):
+        """Draws a border around the game board"""
         outer_border_dimension = (50, 0, 700, 673)
         pygame.draw.rect(self.screen, (0, 0, 0, 0), outer_border_dimension)
 
@@ -578,9 +573,8 @@ class Othello:
         inner_border_dim = (65, 10, 670, 656)
         pygame.draw.rect(self.screen, (0, 0, 0, 0), inner_border_dim)
 
-    # Displays current scores on the screen
     def display_score(self):
-
+        """Displays current scores on the screen"""
         score = self.grid.get_score(self.grid.get_grid())
 
         activated_color = (30, 144, 255)
@@ -632,9 +626,8 @@ class Othello:
 
         self.screen.blit(current_token, (380, 690))
 
-    # Draws the game interface and winner screen
     def draw(self):
-
+        """Draws the game interface and winner screen"""
         self.screen.fill((42, 42, 42))
 
         if self.choose_color:
@@ -682,9 +675,8 @@ class Othello:
             self.screen.blit(winner_surface, (220, 640))
         pygame.display.update()
 
-    # Draws the main menu
     def draw_menu(self):
-
+        """Draws the main menu"""
         self.screen.fill((30, 30, 30))
 
         title = self.big_font.render("OTHELLO GAME", True, (255, 255, 255))
@@ -705,9 +697,8 @@ class Othello:
 
         self.screen.blit(text, (340, 320))
 
-    # Draws the color selection menu
     def draw_color_menu(self):
-
+        """Draws the color selection menu"""
         self.screen.fill((30, 30, 30))
 
         title = self.big_font.render("Choose Color", True, (255, 255, 255))
