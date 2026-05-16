@@ -374,8 +374,8 @@ class Othello:
             self.big_font = pygame.font.SysFont(None, 50)
 
         self.reset_button = pygame.Rect(635, 680, 145, 50)
-        self.hvh_button = pygame.Rect(280, 200, 330, 60)
-        self.hvai_button = pygame.Rect(280, 300, 330, 60)
+        self.hvh_button = pygame.Rect(250, 200, 330, 60)
+        self.hvai_button = pygame.Rect(250, 300, 330, 60)
         self.choose_color = False
         self.hvh_mode = False
         self.white_button = pygame.Rect(250, 300, 300, 60)
@@ -681,13 +681,13 @@ class Othello:
 
         title = self.big_font.render("OTHELLO GAME", True, (255, 255, 255))
 
-        self.screen.blit(title, (220, 80))
+        self.screen.blit(title, (190, 80))
 
         pygame.draw.rect(self.screen, (50, 150, 255), self.hvh_button, border_radius=10)
 
         text = self.font.render("Human vs Human", True, (255, 255, 255))
 
-        self.screen.blit(text, (300, 220))
+        self.screen.blit(text, (270, 220))
 
         pygame.draw.rect(
             self.screen, (50, 200, 100), self.hvai_button, border_radius=10
@@ -695,7 +695,7 @@ class Othello:
 
         text = self.font.render("Human vs AI", True, (255, 255, 255))
 
-        self.screen.blit(text, (340, 320))
+        self.screen.blit(text, (310, 320))
 
     def draw_color_menu(self):
         """Draws the color selection menu"""
