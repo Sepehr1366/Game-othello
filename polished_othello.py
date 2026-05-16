@@ -194,7 +194,7 @@ class Grid:
         return playable
 
     def evaluate(self, board):
-        """# Evaluates the board score for the AI"""
+        """Evaluates the board score for the AI"""
         score = 0
 
         for row in board:
