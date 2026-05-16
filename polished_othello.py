@@ -571,13 +571,12 @@ class Othello:
     def draw_board_border(self):
         outer_border_dimension = (50, 0, 700, 673)
         pygame.draw.rect(self.screen, (0, 0, 0, 0), outer_border_dimension)
-        
+
         middle_border_dim = (63, 8, 675, 660)
         pygame.draw.rect(self.screen, (255, 255, 255, 1), middle_border_dim)
 
         inner_border_dim = (65, 10, 670, 656)
         pygame.draw.rect(self.screen, (0, 0, 0, 0), inner_border_dim)
-        
 
     # Displays current scores on the screen
     def display_score(self):
@@ -622,6 +621,10 @@ class Othello:
 
     def display_current_token(self):
         """Displays current token in score area"""
+        square_dimensions = (375, 685, 90, 90)
+        pygame.draw.rect(self.screen, (0, 0, 0), (375 - 2, 685 - 2, 90 + 4, 90 + 4))
+        pygame.draw.rect(self.screen, (0, 150, 0), square_dimensions)
+
         if self.current_player == -1:
             current_token = self.grid.black_token
         else:
@@ -653,8 +656,6 @@ class Othello:
         self.display_score()
 
         self.display_current_token()
-
-
 
         pygame.draw.rect(
             self.screen, (200, 50, 50), self.reset_button, border_radius=10
